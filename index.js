@@ -187,7 +187,7 @@ app.delete('/deleteAutoReport', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("Reports").collection("AutoReports").deleteOne(mongo.ObjectId(req.query.id)).then((err, body) => {
+                client.db("Reports").collection("AutoReports").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
@@ -216,7 +216,7 @@ app.delete('/deleteManualReport', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("Reports").collection("ManualReports").deleteOne(mongo.ObjectId(req.query.id)).then((err, body) => {
+                client.db("Reports").collection("ManualReports").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
