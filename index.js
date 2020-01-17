@@ -13,7 +13,7 @@ app.get('/', (_, res) => {
 });
 
 app.post('/addAutoReport', (req, res) => {
-    if(req.body.payload && req.body.nature) {
+    if(req.body) {
         const MongoClient = require('mongodb').MongoClient;
         const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
         const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -24,7 +24,7 @@ app.post('/addAutoReport', (req, res) => {
             else{
                 const db = client.db("Reports");
                 const collection = db.collection("AutoReports");
-                collection.insertOne(req.body.payload, (err, data) => {
+                collection.insertOne(req.body, (err, data) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
@@ -43,7 +43,7 @@ app.post('/addAutoReport', (req, res) => {
 });
 
 app.post('/addManualReport', (req, res) => {
-    if(req.body.payload && req.body.nature) {
+    if(req.body) {
         const MongoClient = require('mongodb').MongoClient;
         const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
         const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -54,7 +54,7 @@ app.post('/addManualReport', (req, res) => {
             else{
                 const db = client.db("Reports");
                 const collection = db.collection("ManualReports");
-                collection.insertOne(req.body.payload, (err, data) => {
+                collection.insertOne(req.body, (err, data) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
