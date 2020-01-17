@@ -95,7 +95,7 @@ app.get('/getFastReports', (_, res) => {
     });
 });
 
-app.get('/getDetailedlReports', (_, res) => {
+app.get('/getDetailedReports', (_, res) => {
     const MongoClient = require('mongodb').MongoClient;
     const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
