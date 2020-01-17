@@ -336,12 +336,62 @@ app.get('/getFire', (req, res) => {
     }
 });
 
-app.post('/analyzeImage', (req, res) => {
-    if(req.body.image){
-        res.status(200).send(req.body.image);
+app.post('/addUser', (req, res) => {
+    if(req.body) {
+        const MongoClient = require('mongodb').MongoClient;
+        const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
+        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        client.connect(err => {
+            if(err){
+                res.status(400).send(err);
+            }
+            else{
+                const db = client.db("Users");
+                const collection = db.collection("Credentials");
+                collection.insertOne(req.body, (err, data) => {
+                    if(err){
+                        res.status(400).send(err);
+                        client.close();
+                    }
+                    else{
+                        res.status(200).send(data);
+                        client.close();
+                    }
+                });
+            }
+        });
     }
     else{
-        res.sendStatus(400);
+        res.status(400).send("Missing Arguments");
+    }
+});
+
+app.get('/getUser', (req, res) => {
+    if(req.query.id){
+        const mongo = require('mongodb');
+        const MongoClient = mongo.MongoClient;
+        const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
+        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        client.connect(err => {
+            if(err){
+                res.status(400).send(err);
+            }
+            else{
+                client.db("Users").collection("Credentials").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
+                    if(err){
+                        res.status(400).send(err);
+                        client.close();
+                    }
+                    else{
+                        res.status(200).send(body);
+                        client.close();
+                    }
+                });
+            }
+        });
+    }
+    else{
+        res.status(400).send("Missing Arguments");
     }
 });
 
