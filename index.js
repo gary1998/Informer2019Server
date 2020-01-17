@@ -12,7 +12,7 @@ app.get('/', (_, res) => {
     res.send("Informer 2019 Server")
 });
 
-app.post('/addAutoReport', (req, res) => {
+app.post('/addFastReport', (req, res) => {
     if(req.body) {
         const MongoClient = require('mongodb').MongoClient;
         const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
@@ -23,7 +23,7 @@ app.post('/addAutoReport', (req, res) => {
             }
             else{
                 const db = client.db("Reports");
-                const collection = db.collection("AutoReports");
+                const collection = db.collection("FastReports");
                 collection.insertOne(req.body, (err, data) => {
                     if(err){
                         res.status(400).send(err);
@@ -42,7 +42,7 @@ app.post('/addAutoReport', (req, res) => {
     }
 });
 
-app.post('/addManualReport', (req, res) => {
+app.post('/addDetailedReport', (req, res) => {
     if(req.body) {
         const MongoClient = require('mongodb').MongoClient;
         const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
@@ -53,7 +53,7 @@ app.post('/addManualReport', (req, res) => {
             }
             else{
                 const db = client.db("Reports");
-                const collection = db.collection("ManualReports");
+                const collection = db.collection("DetailedReports");
                 collection.insertOne(req.body, (err, data) => {
                     if(err){
                         res.status(400).send(err);
@@ -72,7 +72,7 @@ app.post('/addManualReport', (req, res) => {
     }
 });
 
-app.get('/getAutoReports', (_, res) => {
+app.get('/getFastReports', (_, res) => {
     const MongoClient = require('mongodb').MongoClient;
     const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -81,7 +81,7 @@ app.get('/getAutoReports', (_, res) => {
             res.status(400).send(err);
         }
         else{
-            client.db("Reports").collection("AutoReports").find({}).toArray((err, body) => {
+            client.db("Reports").collection("FastReports").find({}).toArray((err, body) => {
                 if(err){
                     res.status(400).send(err);
                     client.close();
@@ -95,7 +95,7 @@ app.get('/getAutoReports', (_, res) => {
     });
 });
 
-app.get('/getManualReports', (_, res) => {
+app.get('/getDetailedlReports', (_, res) => {
     const MongoClient = require('mongodb').MongoClient;
     const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -104,7 +104,7 @@ app.get('/getManualReports', (_, res) => {
             res.status(400).send(err);
         }
         else{
-            client.db("Reports").collection("ManualReports").find({}).toArray((err, body) => {
+            client.db("Reports").collection("DetailedReports").find({}).toArray((err, body) => {
                 if(err){
                     res.status(400).send(err);
                     client.close();
@@ -118,7 +118,7 @@ app.get('/getManualReports', (_, res) => {
     });
 });
 
-app.get('/getAutoReport', (req, res) => {
+app.get('/getFastReport', (req, res) => {
     if(req.query.id){
         const mongo = require('mongodb');
         const MongoClient = mongo.MongoClient;
@@ -129,7 +129,7 @@ app.get('/getAutoReport', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("Reports").collection("AutoReports").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
+                client.db("Reports").collection("FastReports").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
@@ -147,7 +147,7 @@ app.get('/getAutoReport', (req, res) => {
     }
 });
 
-app.get('/getManualReport', (req, res) => {
+app.get('/getDetailedReport', (req, res) => {
     if(req.query.id){
         const mongo = require('mongodb');
         const MongoClient = mongo.MongoClient;
@@ -158,7 +158,7 @@ app.get('/getManualReport', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("Reports").collection("ManualReports").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
+                client.db("Reports").collection("DetailedReports").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
@@ -176,7 +176,7 @@ app.get('/getManualReport', (req, res) => {
     }
 });
 
-app.delete('/deleteAutoReport', (req, res) => {
+app.delete('/deleteFastReport', (req, res) => {
     if(req.query.id){
         const mongo = require('mongodb');
         const MongoClient = mongo.MongoClient;
@@ -187,7 +187,7 @@ app.delete('/deleteAutoReport', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("Reports").collection("AutoReports").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
+                client.db("Reports").collection("FastReports").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
@@ -205,7 +205,7 @@ app.delete('/deleteAutoReport', (req, res) => {
     }
 });
 
-app.delete('/deleteManualReport', (req, res) => {
+app.delete('/deleteDetailedReport', (req, res) => {
     if(req.query.id){
         const mongo = require('mongodb');
         const MongoClient = mongo.MongoClient;
@@ -216,7 +216,7 @@ app.delete('/deleteManualReport', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("Reports").collection("ManualReports").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
+                client.db("Reports").collection("DetailedReports").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
