@@ -12,7 +12,7 @@ app.get('/', (_, res) => {
     res.send("Informer 2019 Server")
 });
 
-app.post('/addFastReport', (req, res) => {
+app.post('/addReport', (req, res) => {
     if(req.body) {
         const MongoClient = require('mongodb').MongoClient;
         const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
@@ -22,8 +22,8 @@ app.post('/addFastReport', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                const db = client.db("Reports");
-                const collection = db.collection("FastReports");
+                const db = client.db("SIH2020");
+                const collection = db.collection("Reports");
                 collection.insertOne(req.body, (err, data) => {
                     if(err){
                         res.status(400).send(err);
@@ -42,37 +42,7 @@ app.post('/addFastReport', (req, res) => {
     }
 });
 
-app.post('/addDetailedReport', (req, res) => {
-    if(req.body) {
-        const MongoClient = require('mongodb').MongoClient;
-        const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
-        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-        client.connect(err => {
-            if(err){
-                res.status(400).send(err);
-            }
-            else{
-                const db = client.db("Reports");
-                const collection = db.collection("DetailedReports");
-                collection.insertOne(req.body, (err, data) => {
-                    if(err){
-                        res.status(400).send(err);
-                        client.close();
-                    }
-                    else{
-                        res.status(200).send(data);
-                        client.close();
-                    }
-                });
-            }
-        });
-    }
-    else{
-        res.status(400).send("Missing Arguments");
-    }
-});
-
-app.get('/getFastReports', (_, res) => {
+app.get('/getReports', (_, res) => {
     const MongoClient = require('mongodb').MongoClient;
     const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -81,7 +51,7 @@ app.get('/getFastReports', (_, res) => {
             res.status(400).send(err);
         }
         else{
-            client.db("Reports").collection("FastReports").find({}).toArray((err, body) => {
+            client.db("SIH2020").collection("Reports").find({}).toArray((err, body) => {
                 if(err){
                     res.status(400).send(err);
                     client.close();
@@ -95,30 +65,7 @@ app.get('/getFastReports', (_, res) => {
     });
 });
 
-app.get('/getDetailedReports', (_, res) => {
-    const MongoClient = require('mongodb').MongoClient;
-    const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-    client.connect(err => {
-        if(err){
-            res.status(400).send(err);
-        }
-        else{
-            client.db("Reports").collection("DetailedReports").find({}).toArray((err, body) => {
-                if(err){
-                    res.status(400).send(err);
-                    client.close();
-                }
-                else{
-                    res.status(200).send(body);
-                    client.close();
-                }
-            });
-        }
-    });
-});
-
-app.get('/getFastReport', (req, res) => {
+app.get('/getReport', (req, res) => {
     if(req.query.id){
         const mongo = require('mongodb');
         const MongoClient = mongo.MongoClient;
@@ -129,7 +76,7 @@ app.get('/getFastReport', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("Reports").collection("FastReports").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
+                client.db("SIH2020").collection("Reports").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
@@ -147,7 +94,7 @@ app.get('/getFastReport', (req, res) => {
     }
 });
 
-app.get('/getDetailedReport', (req, res) => {
+app.delete('/deleteReport', (req, res) => {
     if(req.query.id){
         const mongo = require('mongodb');
         const MongoClient = mongo.MongoClient;
@@ -158,65 +105,7 @@ app.get('/getDetailedReport', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("Reports").collection("DetailedReports").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
-                    if(err){
-                        res.status(400).send(err);
-                        client.close();
-                    }
-                    else{
-                        res.status(200).send(body);
-                        client.close();
-                    }
-                });
-            }
-        });
-    }
-    else{
-        res.status(400).send("Missing Arguments");
-    }
-});
-
-app.delete('/deleteFastReport', (req, res) => {
-    if(req.query.id){
-        const mongo = require('mongodb');
-        const MongoClient = mongo.MongoClient;
-        const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
-        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-        client.connect(err => {
-            if(err){
-                res.status(400).send(err);
-            }
-            else{
-                client.db("Reports").collection("FastReports").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
-                    if(err){
-                        res.status(400).send(err);
-                        client.close();
-                    }
-                    else{
-                        res.status(200).send(body);
-                        client.close();
-                    }
-                });
-            }
-        });
-    }
-    else{
-        res.status(400).send("Missing Arguments");
-    }
-});
-
-app.delete('/deleteDetailedReport', (req, res) => {
-    if(req.query.id){
-        const mongo = require('mongodb');
-        const MongoClient = mongo.MongoClient;
-        const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
-        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-        client.connect(err => {
-            if(err){
-                res.status(400).send(err);
-            }
-            else{
-                client.db("Reports").collection("DetailedReports").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
+                client.db("SIH2020").collection("Reports").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
@@ -346,8 +235,8 @@ app.post('/addUser', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                const db = client.db("Users");
-                const collection = db.collection("Credentials");
+                const db = client.db("SIH2020");
+                const collection = db.collection("Users");
                 collection.insertOne(req.body, (err, data) => {
                     if(err){
                         res.status(400).send(err);
@@ -366,6 +255,29 @@ app.post('/addUser', (req, res) => {
     }
 });
 
+app.get('/getUsers', (_, res) => {
+    const MongoClient = require('mongodb').MongoClient;
+    const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
+    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    client.connect(err => {
+        if(err){
+            res.status(400).send(err);
+        }
+        else{
+            client.db("SIH2020").collection("Users").find({}).toArray((err, body) => {
+                if(err){
+                    res.status(400).send(err);
+                    client.close();
+                }
+                else{
+                    res.status(200).send(body);
+                    client.close();
+                }
+            });
+        }
+    });
+});
+
 app.get('/getUser', (req, res) => {
     if(req.query.id){
         const mongo = require('mongodb');
@@ -377,7 +289,36 @@ app.get('/getUser', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("Users").collection("Credentials").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
+                client.db("SIH2020").collection("Users").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
+                    if(err){
+                        res.status(400).send(err);
+                        client.close();
+                    }
+                    else{
+                        res.status(200).send(body);
+                        client.close();
+                    }
+                });
+            }
+        });
+    }
+    else{
+        res.status(400).send("Missing Arguments");
+    }
+});
+
+app.delete('/deleteUser', (req, res) => {
+    if(req.query.id){
+        const mongo = require('mongodb');
+        const MongoClient = mongo.MongoClient;
+        const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
+        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        client.connect(err => {
+            if(err){
+                res.status(400).send(err);
+            }
+            else{
+                client.db("SIH2020").collection("Users").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
