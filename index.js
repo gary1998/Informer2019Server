@@ -129,8 +129,11 @@ app.get('/getHosps', (req, res) => {
         let latitude = req.query.lat;
         let longitude = req.query.lon;
         let limit = req.query.limit;
-        fetch(`https://nominatim.openstreetmap.org/search.php?limit=${limit}&format=json&q=hospitals%20near%20[${latitude},${longitude}]`, (error, meta, body) => {
-            if(body){
+        fetch(`https://nominatim.openstreetmap.org/search.php?limit=${limit}&format=json&q=hospitals%20near%20[${latitude},${longitude}]`, (err, _, body) => {
+            if(err){
+                res.status(400).send(err);
+            }
+            else{
                 try{
                     body = JSON.parse(body.toString());
                     body.map(value => {
@@ -147,10 +150,7 @@ app.get('/getHosps', (req, res) => {
                     res.status(400).send(err);
                 }
             }
-            if(error){
-                res.status(400).send(error);
-            }
-        })
+        });
     }
     else {
         res.sendStatus(400);
@@ -163,8 +163,11 @@ app.get('/getPolice', (req, res) => {
         let latitude = req.query.lat;
         let longitude = req.query.lon;
         let limit = req.query.limit;
-        fetch(`https://nominatim.openstreetmap.org/search.php?limit=${limit}&format=json&q=police%20near%20[${latitude},${longitude}]`, (error, meta, body) => {
-            if(body){
+        fetch(`https://nominatim.openstreetmap.org/search.php?limit=${limit}&format=json&q=police%20near%20[${latitude},${longitude}]`, (err, _, body) => {
+            if(err){
+                res.status(400).send(err);
+            }    
+            else{
                 try{
                     body = JSON.parse(body.toString());
                     body.map(value => {
@@ -180,9 +183,6 @@ app.get('/getPolice', (req, res) => {
                 catch(err){
                     res.status(400).send(err);
                 }
-            }
-            if(error){
-                res.status(400).send(error);
             }
         })
     }
@@ -192,13 +192,16 @@ app.get('/getPolice', (req, res) => {
 });
 
 app.get('/getFire', (req, res) => {
-    if(req.query.lat && req.query.lon) {
+    if(req.query.lat && req.query.lon && req.query.limit) {
         let payload = [];
         let latitude = req.query.lat;
         let longitude = req.query.lon;
         let limit = req.query.limit;
-        fetch(`https://nominatim.openstreetmap.org/search.php?limit=${limit}&format=json&q=fire%20near%20[${latitude},${longitude}]`, (error, meta, body) => {
-            if(body){
+        fetch(`https://nominatim.openstreetmap.org/search.php?limit=${limit}&format=json&q=fire%20near%20[${latitude},${longitude}]`, (err, _, body) => {
+            if(err){
+                res.status(400).send(err);
+            }
+            else{
                 try{
                     body = JSON.parse(body.toString());
                     body.map(value => {
@@ -215,10 +218,7 @@ app.get('/getFire', (req, res) => {
                     res.status(400).send(err);
                 }
             }
-            if(error){
-                res.status(400).send(error);
-            }
-        })
+        });
     }
     else {
         res.sendStatus(400);
@@ -264,7 +264,7 @@ app.get('/getUsers', (_, res) => {
             res.status(400).send(err);
         }
         else{
-            client.db("SIH2020").collection("Users").find({}).toArray((err, body) => {
+            client.db("SIH2020").collection("Users").find({}).toArray((body, _, err) => {
                 if(err){
                     res.status(400).send(err);
                     client.close();
@@ -279,6 +279,31 @@ app.get('/getUsers', (_, res) => {
 });
 
 app.get('/getUser', (req, res) => {
+    if(req.query.email){
+        const MongoClient = require('mongodb').MongoClient;
+        const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
+        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        client.connect(err => {
+            if(err){
+                res.status(400).send(err);
+            }
+            else{
+                client.db("SIH2020").collection("Users").findOne({email: req.query.email}).then((body, _, err) => {
+                    if(err){
+                        res.status(400).send(err);
+                        client.close();
+                    }
+                    else{
+                        res.status(200).send(body);
+                        client.close();
+                    }
+                });
+            }
+        });
+    }
+});
+
+app.delete('/deleteUser', (req, res) => {
     if(req.query.id){
         const mongo = require('mongodb');
         const MongoClient = mongo.MongoClient;
@@ -289,7 +314,7 @@ app.get('/getUser', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("SIH2020").collection("Users").findOne(mongo.ObjectId(req.query.id)).then((err, body) => {
+                client.db("SIH2020").collection("Users").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((body, _, err) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
@@ -307,8 +332,8 @@ app.get('/getUser', (req, res) => {
     }
 });
 
-app.delete('/deleteUser', (req, res) => {
-    if(req.query.id){
+app.get('/login', (req, res) => {
+    if(req.query.email && req.query.password){
         const mongo = require('mongodb');
         const MongoClient = mongo.MongoClient;
         const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
@@ -318,14 +343,21 @@ app.delete('/deleteUser', (req, res) => {
                 res.status(400).send(err);
             }
             else{
-                client.db("SIH2020").collection("Users").deleteOne({"_id": mongo.ObjectId(req.query.id)}).then((err, body) => {
+                client.db("SIH2020").collection("Users").findOne({'email': req.query.email, 'password': req.query.password}).then((body, _, err) => {
                     if(err){
                         res.status(400).send(err);
                         client.close();
                     }
                     else{
-                        res.status(200).send(body);
-                        client.close();
+                        if(!body){
+                            res.status(500).send({});
+                        }
+                        else{
+                            res.status(200).send(Object.assign(body, {
+                                password: ""
+                            }));
+                            client.close();
+                        }
                     }
                 });
             }
