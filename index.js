@@ -264,7 +264,7 @@ app.get('/getUsers', (_, res) => {
             res.status(400).send(err);
         }
         else{
-            client.db("SIH2020").collection("Users").find({}).toArray((body, _, err) => {
+            client.db("SIH2020").collection("Users").find({}).toArray((err, body) => {
                 if(err){
                     res.status(400).send(err);
                     client.close();
@@ -362,6 +362,36 @@ app.get('/login', (req, res) => {
                 });
             }
         });
+    }
+    else{
+        res.status(400).send("Missing Arguments");
+    }
+});
+
+app.post('/register', (req, res) => {
+    if(req.body){
+        const MongoClient = require('mongodb').MongoClient;
+        const uri = "mongodb+srv://SIH2019Login:GbeLZqT6vFzP1gLd@informer2019db-yp3zc.mongodb.net/test?retryWrites=true&w=majority";
+        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        client.connect(err => {
+            if(err){
+                res.status(400).send(err);
+            }
+            else{
+                const db = client.db("SIH2020");
+                const collection = db.collection("Users");
+                collection.insertOne(req.body, (err, data) => {
+                    if(err){
+                        res.status(400).send(err);
+                        client.close();
+                    }
+                    else{
+                        res.status(200).send(data);
+                        client.close();
+                    }
+                });
+            }
+        })
     }
     else{
         res.status(400).send("Missing Arguments");
